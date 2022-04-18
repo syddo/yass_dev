@@ -2,24 +2,26 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/akamensky/argparse"
+	"github.com/syddo/yaas_dev/selftestdatahandling"
+	"github.com/syddo/yaas_dev/selftestdspsend"
 )
 
 func main() {
 
-	parser := argparse.NewParser("yaas", "YAAS - Yet Another Support Script. Takes care of the small things so you can focus on the big things.")
+	parser := argparse.NewParser("yaas", "YASS - Yet Another Support Script. Takes care of the small things so you can focus on the big things.")
 
 	// generate command
 	// subcommand for generation of support files
 	// ie: selftest data handling, hexfiles dsp send
 	generateCmd := parser.NewCommand("generate", "Generate support files")
+	generateWhat := generateCmd.String("f", "autogenfile", &argparse.Options{Required: true, Help: "create the Test Program Autogen Files"})
+	generateWhatInputFilesDir := generateCmd.String("i", "input-dir", &argparse.Options{Required: false, Help: "Specify Input Files Location."})
+	//generateSHFDspSendCfg := generateCmd.String("c", "config", &argparse.Options{Required: false, Help: "Specify DSP Send Block Config Name."})
+
 	tarprogCmd := parser.NewCommand("tarprog", "Create a tar ball of this test program")
-
-	generate_what := generateCmd.String("f", "autogenfile", &argparse.Options{Required: true, Help: "create the Test Program Autogen Files"})
-
 	tarOpt := tarprogCmd.String("o", "output", &argparse.Options{Required: true, Help: "tar with or without sources"})
 
 	err := parser.Parse(os.Args)
@@ -31,14 +33,17 @@ func main() {
 
 		//generate_what := generateCmd.String("f", "autogenfile", &argparse.Options{Required: true, Help: "create the Test Program Autogen Files"})
 		fmt.Println("generate command was given")
-		fmt.Println(*generate_what)
+		fmt.Println(*generateWhat)
 
-		if *generate_what == "selftestdatahandling" {
-			generateSelftestDataHandlingFiles()
-		} else if *generate_what == "selftestdspsend" {
-			generateSelftestHexFileDspSend()
+		if *generateWhat == "selftestdatahandling" {
+			selftestdatahandling.GenerateSDHFiles(*generateWhatInputFilesDir)
+			fmt.Println("Success...")
+		} else if *generateWhat == "selftestdspsend" {
+			// selftestdspsend.GenerateSHFAutogen(*generateWhatInputFilesDir, *generateSHFDspSendCfg)
+			selftestdspsend.GenerateSHFAutogen(*generateWhatInputFilesDir, "default") //default config
+			fmt.Println("Success...")
 		} else {
-			fmt.Printf("option %s is not supported.", *generate_what)
+			fmt.Printf("option %s is not supported.", *generateWhat)
 		}
 
 	} else if tarprogCmd.Happened() {
@@ -46,14 +51,6 @@ func main() {
 		fmt.Println(*tarOpt)
 
 	} else {
-		log.Fatal("something weird happened")
+		//log.Fatal("something weird happened")
 	}
-}
-
-func generateSelftestDataHandlingFiles() {
-	fmt.Println("Generating Selftest DataHandling Autogen Files")
-}
-
-func generateSelftestHexFileDspSend() {
-	fmt.Println("Generating Selftest DspSend Blocks Autogen Files")
 }

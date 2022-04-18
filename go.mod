@@ -1,4 +1,4 @@
-module github.com/syddo/yaas
+module github.com/syddo/yass_dev
 
 go 1.17
 
