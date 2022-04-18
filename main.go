@@ -5,8 +5,6 @@ import (
 	"os"
 
 	"github.com/akamensky/argparse"
-	"github.com/syddo/yaas_dev/selftestdatahandling"
-	"github.com/syddo/yaas_dev/selftestdspsend"
 )
 
 func main() {
